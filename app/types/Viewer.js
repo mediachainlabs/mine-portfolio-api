@@ -3,6 +3,7 @@ import {
 } from 'graphql';
 
 import ObjectType, {setNodeType} from '../objectType';
+import User from './User';
 
 const NAME =  'Viewer';
 
@@ -20,6 +21,11 @@ export default new GraphQLObjectType(ObjectType({
   description: 'A singleton object that represents the "window" into the global app state.',
   fields: (type) => ({
     id: type.id(NAME),
+    currentUser: {
+      type: User,
+      description: 'The currently logged in User, or null if there is no current session',
+      resolve: (obj, args, {rootValue: {user}}) => user
+    },
   })
 }));
 
