@@ -7,9 +7,10 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import winston from 'winston';
 
+import db from '../services/db';
 import {setNodeType} from '../objectType';
 import User from '../types/User.js';
-import {getUser} from '../services/users';
+import {createStore} from '../services/store';
 import schema from '../schema';
 
 const router = Router();
@@ -23,10 +24,12 @@ const opts = {
 
 passport.use(new JwtStrategy(opts, async (jwtPayload, done) => {
   try {
-    const user = await getUser(jwtPayload.d.uid);
+    const user = await db('users').where({id: jwtPayload.d.uid}).first();
     done(null, user ? setNodeType(User, user) : null);
   } catch(e) {
-    done(e);
+    winston.error(e);
+    // Only log error
+    done();
   }
 }));
 
@@ -60,10 +63,16 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined
   router.use(responseTime());
 }
 
-router.use(graphqlHTTP(({user}) => ({
-  schema,
-  graphiql: true,
-  rootValue: {user}
-})));
+router.use(graphqlHTTP(({user}) => {
+  const store = createStore({users: [user]});
+  return {
+    schema,
+    graphiql: true,
+    rootValue: {
+      user,
+      store
+    }
+  };
+}));
 
 export default router;

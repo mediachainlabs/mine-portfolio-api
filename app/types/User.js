@@ -7,9 +7,11 @@ import {
 const NAME = 'User';
 
 import ObjectType from '../objectType';
+import {INode} from './Node';
 
 export default new GraphQLObjectType(ObjectType({
   name: NAME,
+  interfaces: [INode],
   description: 'A user of the app.',
   fields: (type) => {
     return {

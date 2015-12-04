@@ -2,14 +2,16 @@ import {
   GraphQLObjectType,
 } from 'graphql';
 
-import NodeType from '../types/Node';
-import ViewerQuery from './Viewer';
+import node from '../types/Node';
+import viewer from './Viewer';
+import user from './User';
 
 export default new GraphQLObjectType({
   name: 'RootQuery',
   fields: {
-    node: NodeType,
-    viewer: ViewerQuery,
+    node,
+    viewer,
+    user,
   }
 });
 

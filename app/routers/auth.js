@@ -4,7 +4,9 @@ import {Strategy as TwitterStrategy} from 'passport-twitter';
 import env from 'require-env';
 import jwt from 'jwt-simple';
 
-import {saveUser, getUser} from '../services/users';
+import {setNodeType} from '../objectType';
+import db from '../services/db';
+import User from '../types/User.js';
 
 const JWT_SECRET = env.require('JWT_SECRET');
 const CLIENT_ORIGIN = env.require('CLIENT_ORIGIN');
@@ -12,15 +14,15 @@ const TWITTER_CONSUMER_ID = env.require('TWITTER_CONSUMER_ID');
 const TWITTER_CONSUMER_SECRET = env.require('TWITTER_CONSUMER_SECRET');
 
 passport.serializeUser((user, cb) => {
-  cb(null, user.username);
+  cb(null, user.id);
 });
 
-passport.deserializeUser(async (username, cb) => {
-  if (typeof username !== 'string') {
+passport.deserializeUser(async (id, cb) => {
+  if (!id) {
     cb(null, null);
   } else {
-    const user = await getUser(username);
-    cb(null, user);
+    const user = await db('users').where({id}).first();
+    cb(null, user ? setNodeType(User, user) : null);
   }
 });
 
@@ -31,13 +33,11 @@ passport.use(new TwitterStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const username = profile.username;
-
-    const user = {
-      id: username,
-      username
-    };
-    await saveUser(user);
-    done(null, user);
+    let user = await db('users').where({username}).first();
+    if (!user) {
+      [user] = await db('users').insert({username}, '*');
+    }
+    done(null, user ? setNodeType(User, user) : null);
   } catch(e) {
     console.log(e);
     done(e);

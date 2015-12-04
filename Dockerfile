@@ -1,10 +1,16 @@
 FROM node:5.1.0
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+ENV NODE_PATH=/data/node_modules/
+ENV PATH=/data/node_modules/.bin:$PATH
 
-COPY package.json /usr/src/app/
-RUN npm install
+RUN mkdir -p /data
+COPY package.json /data
+
+RUN cd /data \
+  && npm install \
+  && mkdir -p /usr/src/app
+
+WORKDIR /usr/src/app
 COPY . /usr/src/app
 
-CMD [ "npm", "run", "dev" ]
+CMD [ "npm", "run", "dev"]
