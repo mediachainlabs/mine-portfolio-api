@@ -15,7 +15,7 @@ export default {
       port: dbURL.port,
       user: dbURL.user,
       password: dbURL.pass,
-      database: dbURL.path,
+      database: dbURL.path ? dbURL.path.substr(1) : null,
       ssl: true
     }
   },
