@@ -3,6 +3,7 @@ import DataLoader from 'dataloader';
 import {setNodeType} from '../objectType';
 import db from './db';
 import User from '../types/User';
+import Image from '../types/Image';
 
 DataLoader.prototype.prime = function(key, value) {
   if (this._options && this._options.cache === false) {
@@ -26,6 +27,7 @@ DataLoader.prototype.primeManyById = function(records) {
 
 const tables = {
   'users': User,
+  'images': Image,
 };
 
 const createLoader = ({tableName, type}) => {

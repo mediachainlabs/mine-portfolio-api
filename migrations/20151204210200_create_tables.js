@@ -1,7 +1,7 @@
 import {
   createTable,
   addCIText,
-  //addForeignKey,
+  addForeignKey,
 } from '../app/util/migrations';
 
 const tables = [
@@ -10,6 +10,14 @@ const tables = [
     config: (knex, table) => {
       addCIText(table, 'username').index().notNullable().unique();
       table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
+    }
+  },
+  {
+    name: 'images',
+    config: (knex, table) => {
+      table.text('image_url').notNullable();
+      table.timestamp('created_at').notNullable().defaultTo(knex.raw('now()'));
+      addForeignKey(table, 'user_id', 'users');
     }
   },
 ];

@@ -69,6 +69,7 @@ router.use(graphqlHTTP(({user}) => {
     schema,
     graphiql: true,
     rootValue: {
+      db,
       user,
       store
     }
