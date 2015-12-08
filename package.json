@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "forever -c 'node --optimize_for_size --max_old_space_size=420 --gc_interval=100' app/index.js",
     "dev": "nodemon --legacy-watch --watch app app/index.js",
     "updateSchema": "/node_modules/.bin/babel-node --presets es2015,stage-2 ./script/updateSchema.js"
   },
@@ -23,6 +24,7 @@
     "express": "^4.13.3",
     "express-graphql": "^0.4.5",
     "express-session": "^1.12.1",
+    "forever": "^0.15.1",
     "graphql": "^0.4.14",
     "graphql-relay": "^0.3.5",
     "jwt-simple": "^0.4.0",
