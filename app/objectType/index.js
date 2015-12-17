@@ -23,6 +23,13 @@ export default (config) => {
 };
 
 export const setNodeType = ({name}, record) => {
+  if (!record.id) {
+    return {
+      ...record,
+      _graphQLType: name,
+    };
+  }
+
   return {
     ...record,
     _graphQLType: name,

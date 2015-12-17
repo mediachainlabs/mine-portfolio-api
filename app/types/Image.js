@@ -6,11 +6,19 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
+import {
+  connectionArgs,
+  connectionFromArray
+} from 'graphql-relay';
+
+import fetchImageVersions from '../util/fetchImageVersions';
+
 const NAME = 'Image';
 
-import ObjectType from '../objectType';
+import ObjectType, {setNodeType} from '../objectType';
 import {INode} from './Node';
 import User from './User';
+import ImageVersion, {ImageVersionConnection} from './ImageVersion';
 import {scaledImageUrl} from '../util/imgix';
 
 export default new GraphQLObjectType(ObjectType({
@@ -50,7 +58,19 @@ export default new GraphQLObjectType(ObjectType({
       viewerCanDelete: {
         type: new GraphQLNonNull(GraphQLBoolean),
         resolve: ({user_id}, _, {rootValue: {user}}) => !!(user && user.id === user_id)
-      }
+      },
+      versions: {
+        type: ImageVersionConnection,
+        args: connectionArgs,
+        resolve: async ({image_url}, args) => {
+          const {results} = await fetchImageVersions(image_url);
+          const matches = results.matches.map(m => {
+            m.id = m.image_url;
+            return setNodeType(ImageVersion, m);
+          });
+          return connectionFromArray(matches, args);
+        }
+      },
     };
   }
 }));
